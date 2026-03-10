@@ -5,7 +5,7 @@ Claude Code skill for fetching and analyzing Gleap support cards as an N2 suppor
 ## Installation
 
 ```bash
-claude skill install --from LeoFalco/gleap-analyzer
+npx skills add LeoFalco/gleap-analyzer -g -y
 ```
 
 ## Setup
