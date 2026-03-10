@@ -14,10 +14,10 @@ try {
 } catch {}
 
 const TICKET_ID = process.argv[2]
-const PROJECT_ID = process.argv[3] || '695d175e48ac2b20b647cbfe'
+const PROJECT_ID = process.argv[3]
 const CONTENT_FILE = process.argv[4]
 
-if (!TICKET_ID || !CONTENT_FILE) {
+if (!TICKET_ID || !PROJECT_ID || !CONTENT_FILE) {
   console.error('Usage: node post-gleap-note.js <ticket-id> <project-id> <content-file>')
   process.exit(1)
 }
@@ -42,8 +42,8 @@ const res = await fetch('https://api.gleap.io/v3/messages', {
     isNote: true,
     data: {
       content: {
-        type: 'doc',
-        content: textToDoc(content)
+        type: 'text',
+        content: content
       }
     }
   })
@@ -59,99 +59,3 @@ if (!res.ok) {
 const result = await res.json()
 console.log(`Internal note posted successfully on ticket ${TICKET_ID}`)
 console.log(`Message ID: ${result._id || result.id || 'unknown'}`)
-
-function textToDoc (text) {
-  const lines = text.split('\n')
-  const nodes = []
-
-  for (const line of lines) {
-    if (line.startsWith('# ')) {
-      nodes.push({
-        type: 'heading',
-        attrs: { level: 1 },
-        content: [{ type: 'text', text: line.slice(2) }]
-      })
-    } else if (line.startsWith('## ')) {
-      nodes.push({
-        type: 'heading',
-        attrs: { level: 2 },
-        content: [{ type: 'text', text: line.slice(3) }]
-      })
-    } else if (line.startsWith('### ')) {
-      nodes.push({
-        type: 'heading',
-        attrs: { level: 3 },
-        content: [{ type: 'text', text: line.slice(4) }]
-      })
-    } else if (line.startsWith('- ')) {
-      nodes.push({
-        type: 'bulletList',
-        content: [{
-          type: 'listItem',
-          content: [{
-            type: 'paragraph',
-            content: parseInlineMarks(line.slice(2))
-          }]
-        }]
-      })
-    } else if (/^\d+\.\s/.test(line)) {
-      const text = line.replace(/^\d+\.\s/, '')
-      nodes.push({
-        type: 'orderedList',
-        content: [{
-          type: 'listItem',
-          content: [{
-            type: 'paragraph',
-            content: parseInlineMarks(text)
-          }]
-        }]
-      })
-    } else if (line === '---') {
-      nodes.push({ type: 'horizontalRule' })
-    } else if (line.trim() === '') {
-      // skip empty lines
-    } else {
-      nodes.push({
-        type: 'paragraph',
-        content: parseInlineMarks(line)
-      })
-    }
-  }
-
-  return nodes
-}
-
-function parseInlineMarks (text) {
-  const nodes = []
-  const regex = /\*\*(.+?)\*\*|`(.+?)`|<(https?:\/\/[^>]+)>|\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g
-  let lastIndex = 0
-  let match
-
-  while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      nodes.push({ type: 'text', text: text.slice(lastIndex, match.index) })
-    }
-
-    if (match[1]) {
-      // bold
-      nodes.push({ type: 'text', text: match[1], marks: [{ type: 'bold' }] })
-    } else if (match[2]) {
-      // code
-      nodes.push({ type: 'text', text: match[2], marks: [{ type: 'code' }] })
-    } else if (match[3]) {
-      // <url>
-      nodes.push({ type: 'text', text: match[3], marks: [{ type: 'link', attrs: { href: match[3] } }] })
-    } else if (match[4] && match[5]) {
-      // [text](url)
-      nodes.push({ type: 'text', text: match[4], marks: [{ type: 'link', attrs: { href: match[5] } }] })
-    }
-
-    lastIndex = match.index + match[0].length
-  }
-
-  if (lastIndex < text.length) {
-    nodes.push({ type: 'text', text: text.slice(lastIndex) })
-  }
-
-  return nodes.length > 0 ? nodes : [{ type: 'text', text }]
-}
