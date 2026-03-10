@@ -1,7 +1,17 @@
-import 'dotenv/config'
-import axios from 'axios'
-import { writeFile } from 'node:fs/promises'
-import { stringify } from 'yaml'
+import { readFile, writeFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
+
+// Load .env manually
+try {
+  const envPath = resolve(process.cwd(), '.env')
+  const envContent = await readFile(envPath, 'utf8')
+  for (const line of envContent.split('\n')) {
+    const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/)
+    if (match && !process.env[match[1]]) {
+      process.env[match[1]] = (match[2] || '').replace(/^['"]|['"]$/g, '')
+    }
+  }
+} catch {}
 
 const TICKET_ID = process.argv[2]
 const PROJECT_ID = process.argv[3] || '695d175e48ac2b20b647cbfe'
@@ -17,17 +27,22 @@ if (!API_KEY) {
   process.exit(1)
 }
 
-const api = axios.create({
-  baseURL: 'https://api.gleap.io/v3',
-  headers: {
-    Authorization: `Bearer ${API_KEY}`,
-    Project: PROJECT_ID
-  }
-})
+const BASE_URL = 'https://api.gleap.io/v3'
+const headers = {
+  Authorization: `Bearer ${API_KEY}`,
+  Project: PROJECT_ID
+}
+
+async function apiGet (path, params = {}) {
+  const url = new URL(`${BASE_URL}${path}`)
+  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v)
+  const res = await fetch(url, { headers })
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}: ${await res.text()}`)
+  return res.json()
+}
 
 async function fetchTicket () {
-  const { data } = await api.get(`/tickets/${TICKET_ID}`)
-  return data
+  return apiGet(`/tickets/${TICKET_ID}`)
 }
 
 async function fetchMessages (skip = 0, limit = 50) {
@@ -35,13 +50,11 @@ async function fetchMessages (skip = 0, limit = 50) {
   let hasMore = true
 
   while (hasMore) {
-    const { data } = await api.get('/messages', {
-      params: {
-        ticket: TICKET_ID,
-        limit,
-        skip: skip + all.length,
-        sort: 'createdAt_asc'
-      }
+    const data = await apiGet('/messages', {
+      ticket: TICKET_ID,
+      limit,
+      skip: skip + all.length,
+      sort: 'createdAt_asc'
     })
 
     const messages = Array.isArray(data) ? data : data.messages || data.data || []
@@ -60,11 +73,9 @@ async function fetchActivities (skip = 0, limit = 50) {
   let hasMore = true
 
   while (hasMore) {
-    const { data } = await api.get(`/tickets/${TICKET_ID}/activity-logs`, {
-      params: {
-        limit,
-        skip: skip + all.length
-      }
+    const data = await apiGet(`/tickets/${TICKET_ID}/activity-logs`, {
+      limit,
+      skip: skip + all.length
     })
 
     const activities = Array.isArray(data) ? data : data.activities || data.data || []
@@ -223,8 +234,8 @@ async function main () {
     activities
   }
 
-  const outputFile = `gleap-card-${TICKET_ID}.yml`
-  await writeFile(outputFile, stringify(result))
+  const outputFile = `gleap-card-${TICKET_ID}.json`
+  await writeFile(outputFile, JSON.stringify(result, null, 2))
 
   console.log(`Ticket: ${ticket.title || ticket.summary || TICKET_ID}`)
   console.log(`Messages: ${filteredMessages.length}`)
@@ -233,6 +244,6 @@ async function main () {
 }
 
 main().catch(err => {
-  console.error(err.response?.data || err.message)
+  console.error(err.message)
   process.exit(1)
 })

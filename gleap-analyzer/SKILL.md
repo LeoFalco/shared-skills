@@ -29,13 +29,13 @@ Run the fetch script from the project root:
 node .claude/skills/gleap-analyzer/gleap-analyzer/scripts/fetch-gleap-card.js <ticketId> <projectId>
 ```
 
-This outputs a `gleap-card-<ticketId>.yml` file in the current directory.
+This outputs a `gleap-card-<ticketId>.json` file in the current directory.
 
 Requires `GLEAP_API_KEY` in `.env`. If missing, tell the user to add it.
 
-### 3. Read and analyze the YAML
+### 3. Read and analyze the JSON
 
-Read the generated `gleap-card-<ticketId>.yml` file.
+Read the generated `gleap-card-<ticketId>.json` file.
 
 The file contains:
 - `ticket`: card metadata (title, description, form data, assigned user, channel)

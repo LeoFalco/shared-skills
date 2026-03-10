@@ -10,17 +10,13 @@ npx skills add LeoFalco/gleap-analyzer -g -y
 
 ## Setup
 
-1. Add your Gleap API key to your project's `.env` file:
+Add your Gleap API key to your project's `.env` file:
 
 ```
 GLEAP_API_KEY=your_api_key_here
 ```
 
-2. Install the required dependencies in the project where you'll use the skill:
-
-```bash
-npm install dotenv axios yaml
-```
+No additional dependencies required — the script uses only Node.js built-ins.
 
 ## Usage
 
