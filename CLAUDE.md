@@ -4,32 +4,48 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Claude Code skill** (`gleap-analyzer`) that fetches and analyzes Gleap support cards as an N2 support analyst. It's installed into other projects via `claude skill install --from LeoFalco/gleap-analyzer` and used within Claude Code sessions.
+This is a **Claude Code skill** repository containing two skills for Gleap support card workflows. Installed into other projects via `npx skills add LeoFalco/gleap-analyzer -g -y` and used within Claude Code sessions.
 
-## Repository Structure
+### Skills
 
-- `gleap-analyzer/SKILL.md` — Skill definition and workflow instructions consumed by Claude Code at runtime
-- `gleap-analyzer/scripts/fetch-gleap-card.js` — Node.js script that calls the Gleap API (v3) to fetch ticket data, messages, and activity logs, then outputs a sanitized YAML file
+| Skill | Purpose | Script |
+|-------|---------|--------|
+| `gleap-analyzer` | Fetches a Gleap card and produces a structured N2 analysis in pt-BR | `gleap-analyzer/scripts/fetch-gleap-card.js` |
+| `gleap-responder` | Posts an investigation report as an internal note on a Gleap card | `gleap-responder/scripts/post-gleap-note.js` |
 
-## How the Skill Works
+Each skill has a `SKILL.md` that defines its name, trigger description, and runtime workflow for Claude Code.
 
-1. User provides a Gleap URL (`https://app.gleap.io/projects/{projectId}/{channel}/{ticketId}`)
-2. The fetch script is invoked: `node .claude/skills/gleap-analyzer/gleap-analyzer/scripts/fetch-gleap-card.js <ticketId> <projectId>`
-3. Script fetches ticket, messages, and activities in parallel from Gleap API v3
-4. Output is written to `gleap-card-<ticketId>.json` in the current directory
-5. Claude reads the YAML and produces a structured N2 analysis in Portuguese (pt-BR)
+## Architecture
 
-## Runtime Dependencies
+### Data Flow
 
-Zero external dependencies — uses only Node.js built-ins (`fetch`, `fs`, `path`). Requires `GLEAP_API_KEY` in the consumer project's `.env`.
+1. User provides a Gleap URL → skill extracts `ticketId` and `projectId` (24-char hex each)
+2. `fetch-gleap-card.js` calls Gleap API v3 (`https://api.gleap.io/v3`) for ticket, messages, and activities in parallel
+3. Output is written to `gleap-card-<ticketId>.json` (heavily sanitized — many ticket/message fields are stripped)
+4. Claude reads the JSON and produces analysis
+5. Optionally, `post-gleap-note.js` posts a markdown report back as an internal note via `POST /v3/messages`
 
-## Key Technical Details
+### Script Conventions
 
-- The script uses ESM imports (`import` syntax) and top-level `await`
-- Uses native `fetch` (Node 18+) instead of axios
-- Loads `.env` manually without dotenv
-- Outputs JSON instead of YAML
+- Zero external dependencies — Node.js built-ins only (`fetch`, `fs`, `path`)
+- ESM imports with top-level `await` (requires Node 18+)
+- `.env` loaded manually (no dotenv) — reads `GLEAP_API_KEY` from consumer project's `.env`
 - Messages and activities are fetched with pagination (50 per page)
 - Rich text (`doc` type content) is converted to plain text via `docToPlainText()`
-- Ticket data is heavily sanitized — many fields are stripped to reduce noise for analysis
-- Default project ID is hardcoded as fallback: `695d175e48ac2b20b647cbfe`
+- Default project ID fallback: `695d175e48ac2b20b647cbfe`
+
+## Testing Scripts Locally
+
+```bash
+# fetch-gleap-card.js
+GLEAP_API_KEY=<key> node gleap-analyzer/scripts/fetch-gleap-card.js <ticketId> [projectId]
+
+# post-gleap-note.js
+GLEAP_API_KEY=<key> node gleap-responder/scripts/post-gleap-note.js <ticketId> <projectId> <content-file.md>
+```
+
+When installed as a skill, scripts run from the consumer project root via:
+```bash
+node .claude/skills/gleap-analyzer/gleap-analyzer/scripts/fetch-gleap-card.js <ticketId> <projectId>
+node .claude/skills/gleap-responder/scripts/post-gleap-note.js <ticketId> <projectId> <file>
+```
