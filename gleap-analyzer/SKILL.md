@@ -26,7 +26,7 @@ Extract IDs from URL:
 Run the fetch script. It may be installed locally or globally, so resolve the path first:
 
 ```bash
-GLEAP_FETCH_SCRIPT=$(find "$HOME/.claude/skills" ".claude/skills" -name "fetch-gleap-card.js" -path "*/gleap-analyzer/scripts/*" 2>/dev/null | head -1) && node "$GLEAP_FETCH_SCRIPT" <ticketId> <projectId>
+node "$HOME/.claude/skills/gleap-analyzer/scripts/fetch-gleap-card.js" <ticketId> <projectId>
 ```
 
 This outputs a `gleap-card-<ticketId>.json` file in the current directory.

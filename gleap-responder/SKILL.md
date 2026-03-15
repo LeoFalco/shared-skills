@@ -86,7 +86,7 @@ After user approval:
 2. Run the post script. It may be installed locally or globally, so resolve the path first:
 
 ```bash
-GLEAP_POST_SCRIPT=$(find "$HOME/.claude/skills" ".claude/skills" -name "post-gleap-note.js" -path "*/gleap-responder/scripts/*" 2>/dev/null | head -1) && node "$GLEAP_POST_SCRIPT" <ticketId> <projectId> gleap-note-{ticketId}.md
+node "$HOME/.claude/skills/gleap-responder/scripts/post-gleap-note.js" <ticketId> <projectId> gleap-note-{ticketId}.md
 ```
 
 3. Delete the temporary file after successful posting

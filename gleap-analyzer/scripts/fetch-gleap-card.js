@@ -45,48 +45,29 @@ async function fetchTicket () {
   return apiGet(`/tickets/${TICKET_ID}`)
 }
 
-async function fetchMessages (skip = 0, limit = 50) {
+async function fetchMessages (limit = 50, maxPages = 20) {
   const all = []
-  let hasMore = true
 
-  while (hasMore) {
+  for (let page = 0; page < maxPages; page++) {
     const data = await apiGet('/messages', {
       ticket: TICKET_ID,
       limit,
-      skip: skip + all.length,
+      skip: all.length,
       sort: 'createdAt_asc'
     })
 
     const messages = Array.isArray(data) ? data : data.messages || data.data || []
     all.push(...messages)
 
-    if (messages.length < limit) {
-      hasMore = false
-    }
+    if (messages.length < limit) break
   }
 
   return all
 }
 
-async function fetchActivities (skip = 0, limit = 50) {
-  const all = []
-  let hasMore = true
-
-  while (hasMore) {
-    const data = await apiGet(`/tickets/${TICKET_ID}/activity-logs`, {
-      limit,
-      skip: skip + all.length
-    })
-
-    const activities = Array.isArray(data) ? data : data.activities || data.data || []
-    all.push(...activities)
-
-    if (activities.length < limit) {
-      hasMore = false
-    }
-  }
-
-  return all
+async function fetchActivities () {
+  const data = await apiGet(`/tickets/${TICKET_ID}/activity-logs`)
+  return Array.isArray(data) ? data : data.activities || data.data || []
 }
 
 function docToPlainText (node) {
