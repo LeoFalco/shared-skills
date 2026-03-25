@@ -30,6 +30,36 @@ if (!API_KEY) {
 
 const content = await readFile(CONTENT_FILE, 'utf8')
 
+// Convert plain text to TipTap doc format (used by Gleap's editor)
+function textToTipTap (text) {
+  const paragraphs = text.split('\n').map(line => {
+    if (line.trim() === '') {
+      return { type: 'paragraph' }
+    }
+    const parts = []
+    const boldRegex = /\*\*(.+?)\*\*/g
+    let lastIndex = 0
+    let match
+    while ((match = boldRegex.exec(line)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push({ type: 'text', text: line.slice(lastIndex, match.index) })
+      }
+      parts.push({ type: 'text', text: match[1], marks: [{ type: 'bold' }] })
+      lastIndex = boldRegex.lastIndex
+    }
+    if (lastIndex < line.length) {
+      parts.push({ type: 'text', text: line.slice(lastIndex) })
+    }
+    if (parts.length === 0) {
+      parts.push({ type: 'text', text: line })
+    }
+    return { type: 'paragraph', content: parts }
+  })
+  return { type: 'doc', content: paragraphs }
+}
+
+const tipTapContent = textToTipTap(content)
+
 const res = await fetch('https://api.gleap.io/v3/messages', {
   method: 'POST',
   headers: {
@@ -40,12 +70,8 @@ const res = await fetch('https://api.gleap.io/v3/messages', {
   body: JSON.stringify({
     ticket: TICKET_ID,
     isNote: true,
-    data: {
-      content: {
-        type: 'text',
-        content: content
-      }
-    }
+    type: 'NOTE',
+    comment: tipTapContent
   })
 })
 

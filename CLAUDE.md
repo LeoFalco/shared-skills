@@ -10,7 +10,7 @@ This is a **Claude Code skill** repository containing two skills for Gleap suppo
 
 | Skill | Purpose | Script |
 |-------|---------|--------|
-| `gleap-analyzer` | Fetches a Gleap card and produces a structured N2 analysis in pt-BR | `gleap-analyzer/scripts/fetch-gleap-card.js` |
+| `gleap-analyzer` | Fetches a Gleap card and produces a structured N3 analysis in pt-BR | `gleap-analyzer/scripts/fetch-gleap-card.js` |
 | `gleap-responder` | Posts an investigation report as an internal note on a Gleap card | `gleap-responder/scripts/post-gleap-note.js` |
 
 Each skill has a `SKILL.md` that defines its name, trigger description, and runtime workflow for Claude Code.
