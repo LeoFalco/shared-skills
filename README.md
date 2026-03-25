@@ -1,12 +1,12 @@
 # gleap-analyzer
 
-Claude Code skills for fetching, analyzing, and responding to Gleap support cards as an N2 support analyst.
+Claude Code skills for fetching, analyzing, and responding to Gleap support cards as an N3 support analyst.
 
 ## Skills
 
 | Skill | Description |
 |-------|-------------|
-| `gleap-analyzer` | Fetches and analyzes Gleap cards, producing a structured N2 analysis |
+| `gleap-analyzer` | Fetches and analyzes Gleap cards, producing a structured N3 analysis |
 | `gleap-responder` | Posts a structured investigation report (relatório) as an internal note on the Gleap card |
 
 ## Installation
@@ -45,7 +45,7 @@ The skill will:
 
 1. Extract the ticket and project IDs from the URL
 2. Fetch card data, messages, and activity logs via the Gleap API
-3. Generate a structured N2 support analysis in Portuguese (pt-BR)
+3. Generate a structured N3 support analysis in Portuguese (pt-BR)
 
 ## Output
 

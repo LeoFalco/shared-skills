@@ -1,13 +1,13 @@
 ---
 name: gleap-analyzer
 description: >
-  Fetch and analyze Gleap support cards as an N2 support analyst. Use when asked to
+  Fetch and analyze Gleap support cards as an N3 support analyst. Use when asked to
   analyze a Gleap card, review a support ticket, investigate a Gleap issue, or when the
   user provides a Gleap URL (app.gleap.io). Triggers on: "analyze gleap card", "gleap card",
   "review this ticket", "investigate this gleap", or any Gleap URL.
 ---
 
-# Gleap Card Analyzer (N2 Support)
+# Gleap Card Analyzer (N3 Support)
 
 ## Workflow
 
@@ -42,9 +42,9 @@ The file contains:
 - `messages`: chronological conversation notes between support agents
 - `activities`: activity log events
 
-### 4. Produce the N2 analysis
+### 4. Produce the N3 analysis
 
-Act as an **N2 (level 2) support analyst**. Write the analysis in **Portuguese (pt-BR)** since FieldControl is a Brazilian company.
+Act as an **N3 (level 3) support analyst**. Write the analysis in **Portuguese (pt-BR)** since FieldControl is a Brazilian company.
 
 Structure the output as:
 
@@ -72,7 +72,7 @@ Based on the conversation, identify:
 - Is it waiting on someone? Who?
 
 #### Próximos Passos Sugeridos
-Actionable next steps for N2 support, such as:
+Actionable next steps for N3 support, such as:
 - Technical investigations to perform
 - People to contact
 - Scripts or queries to run
