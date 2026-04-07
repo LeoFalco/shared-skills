@@ -1,18 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-// Load .env manually
-try {
-  const envPath = resolve(process.cwd(), '.env')
-  const envContent = await readFile(envPath, 'utf8')
-  for (const line of envContent.split('\n')) {
-    const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/)
-    if (match && !process.env[match[1]]) {
-      process.env[match[1]] = (match[2] || '').replace(/^['"]|['"]$/g, '')
-    }
-  }
-} catch {}
-
 const TICKET_ID = process.argv[2]
 const PROJECT_ID = process.argv[3]
 const CONTENT_FILE = process.argv[4]
@@ -22,15 +10,23 @@ if (!TICKET_ID || !PROJECT_ID || !CONTENT_FILE) {
   process.exit(1)
 }
 
-const API_KEY = process.env.GLEAP_API_KEY
-if (!API_KEY) {
-  console.error('Missing GLEAP_API_KEY env var')
+const GLEAP_API_KEY = process.env.GLEAP_API_KEY
+if (!GLEAP_API_KEY) {
+  console.error('Error: Missing GLEAP_API_KEY environment variable.\n')
+  console.error('Add it to your shell profile so it is available in every session:')
+  console.error('  echo \'export GLEAP_API_KEY=your_api_key_here\' >> ~/.zshrc  # macOS / Zsh')
+  console.error('  echo \'export GLEAP_API_KEY=your_api_key_here\' >> ~/.bashrc # Linux / Bash')
+  console.error('\nThen reload your shell: source ~/.zshrc (or ~/.bashrc)')
   process.exit(1)
 }
 
-const content = await readFile(CONTENT_FILE, 'utf8')
-
-// Convert plain text to TipTap doc format (used by Gleap's editor)
+/**
+ * Converts plain text (with optional **bold** markdown) to TipTap doc format
+ * used by Gleap's rich text editor.
+ *
+ * @param {string} text - Plain text content, may contain **bold** markers and newlines.
+ * @returns {{ type: 'doc', content: Array<{ type: 'paragraph', content?: Array<{ type: 'text', text: string, marks?: Array<{ type: string }> }> }> }} TipTap document object.
+ */
 function textToTipTap (text) {
   const paragraphs = text.split('\n').map(line => {
     if (line.trim() === '') {
@@ -58,12 +54,11 @@ function textToTipTap (text) {
   return { type: 'doc', content: paragraphs }
 }
 
-const tipTapContent = textToTipTap(content)
 
 const res = await fetch('https://api.gleap.io/v3/messages', {
   method: 'POST',
   headers: {
-    Authorization: `Bearer ${API_KEY}`,
+    Authorization: `Bearer ${GLEAP_API_KEY}`,
     Project: PROJECT_ID,
     'Content-Type': 'application/json'
   },
@@ -71,7 +66,7 @@ const res = await fetch('https://api.gleap.io/v3/messages', {
     ticket: TICKET_ID,
     isNote: true,
     type: 'NOTE',
-    comment: tipTapContent
+    comment: textToTipTap(await readFile(CONTENT_FILE, 'utf8'))
   })
 })
 

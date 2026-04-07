@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Claude Code skill** repository containing two skills for Gleap support card workflows. Installed into other projects via `npx skills add LeoFalco/gleap-analyzer -g -y` and used within Claude Code sessions.
+This is a **shared Claude Code skills** repository — a collection of reusable skills installed into other projects via `npx skills add LeoFalco/shared-skills -g -y` and used within Claude Code sessions.
+
+Each skill lives in its own directory with a `SKILL.md` (name, trigger description, runtime workflow) and a `scripts/` folder for any supporting scripts.
 
 ### Skills
 
@@ -13,9 +15,21 @@ This is a **Claude Code skill** repository containing two skills for Gleap suppo
 | `gleap-analyzer` | Fetches a Gleap card and produces a structured N3 analysis in pt-BR | `gleap-analyzer/scripts/fetch-gleap-card.js` |
 | `gleap-responder` | Posts an investigation report as an internal note on a Gleap card | `gleap-responder/scripts/post-gleap-note.js` |
 
-Each skill has a `SKILL.md` that defines its name, trigger description, and runtime workflow for Claude Code.
+## Adding a New Skill
 
-## Architecture
+1. Create a directory with the skill name
+2. Add a `SKILL.md` defining name, trigger description, and workflow
+3. Add supporting scripts under `scripts/` if needed
+4. Update the skills table above
+
+## Script Conventions
+
+- Zero external dependencies — Node.js built-ins only (`fetch`, `fs`, `path`)
+- ESM imports with top-level `await` (requires Node 18+)
+- `.env` loaded manually (no dotenv) — reads keys from consumer project's `.env`
+- When installed as a skill, scripts are resolved dynamically via `find` across `$HOME/.claude/skills` and `.claude/skills`
+
+## Gleap Skills — Architecture
 
 ### Data Flow
 
@@ -25,11 +39,8 @@ Each skill has a `SKILL.md` that defines its name, trigger description, and runt
 4. Claude reads the JSON and produces analysis
 5. Optionally, `post-gleap-note.js` posts a markdown report back as an internal note via `POST /v3/messages`
 
-### Script Conventions
+### Gleap-Specific Details
 
-- Zero external dependencies — Node.js built-ins only (`fetch`, `fs`, `path`)
-- ESM imports with top-level `await` (requires Node 18+)
-- `.env` loaded manually (no dotenv) — reads `GLEAP_API_KEY` from consumer project's `.env`
 - Messages and activities are fetched with pagination (50 per page)
 - Rich text (`doc` type content) is converted to plain text via `docToPlainText()`
 - Default project ID fallback: `695d175e48ac2b20b647cbfe`
@@ -42,13 +53,4 @@ GLEAP_API_KEY=<key> node gleap-analyzer/scripts/fetch-gleap-card.js <ticketId> [
 
 # post-gleap-note.js
 GLEAP_API_KEY=<key> node gleap-responder/scripts/post-gleap-note.js <ticketId> <projectId> <content-file.md>
-```
-
-When installed as a skill (local or global), scripts are resolved dynamically:
-```bash
-# fetch-gleap-card.js (resolve from local or global .claude/skills)
-GLEAP_FETCH_SCRIPT=$(find "$HOME/.claude/skills" ".claude/skills" -name "fetch-gleap-card.js" -path "*/gleap-analyzer/scripts/*" 2>/dev/null | head -1) && node "$GLEAP_FETCH_SCRIPT" <ticketId> <projectId>
-
-# post-gleap-note.js (resolve from local or global .claude/skills)
-GLEAP_POST_SCRIPT=$(find "$HOME/.claude/skills" ".claude/skills" -name "post-gleap-note.js" -path "*/gleap-responder/scripts/*" 2>/dev/null | head -1) && node "$GLEAP_POST_SCRIPT" <ticketId> <projectId> <file>
 ```
