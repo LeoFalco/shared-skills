@@ -1,18 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-// Load .env manually
-try {
-  const envPath = resolve(process.cwd(), '.env')
-  const envContent = await readFile(envPath, 'utf8')
-  for (const line of envContent.split('\n')) {
-    const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/)
-    if (match && !process.env[match[1]]) {
-      process.env[match[1]] = (match[2] || '').replace(/^['"]|['"]$/g, '')
-    }
-  }
-} catch {}
-
 const TICKET_ID = process.argv[2]
 const PROJECT_ID = process.argv[3] || '695d175e48ac2b20b647cbfe'
 
@@ -21,15 +9,19 @@ if (!TICKET_ID) {
   process.exit(1)
 }
 
-const API_KEY = process.env.GLEAP_API_KEY
-if (!API_KEY) {
-  console.error('Missing GLEAP_API_KEY env var')
+const GLEAP_API_KEY = process.env.GLEAP_API_KEY
+if (!GLEAP_API_KEY) {
+  console.error('Error: Missing GLEAP_API_KEY environment variable.\n')
+  console.error('Add it to your shell profile so it is available in every session:')
+  console.error('  echo \'export GLEAP_API_KEY=your_api_key_here\' >> ~/.zshrc  # macOS / Zsh')
+  console.error('  echo \'export GLEAP_API_KEY=your_api_key_here\' >> ~/.bashrc # Linux / Bash')
+  console.error('\nThen reload your shell: source ~/.zshrc (or ~/.bashrc)')
   process.exit(1)
 }
 
 const BASE_URL = 'https://api.gleap.io/v3'
 const headers = {
-  Authorization: `Bearer ${API_KEY}`,
+  Authorization: `Bearer ${GLEAP_API_KEY}`,
   Project: PROJECT_ID
 }
 
