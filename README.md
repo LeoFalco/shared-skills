@@ -32,6 +32,14 @@ Posts an investigation report as an internal note on a Gleap card.
 
 **Flow:** Gathers findings from the conversation, generates a structured report, shows it for approval, and posts it via the Gleap API.
 
+### angular-upgrade
+
+Upgrades an Angular project by exactly one major version using the Angular CLI.
+
+**Triggers:** "upgrade angular", "update angular", "ng update", "subir versão do angular", "migrate angular", "atualizar angular".
+
+**Flow:** Detects the current Angular version, checks the official update guide, runs `ng update` for core packages and ecosystem dependencies (Material, CDK, ESLint, TypeScript, etc.), then validates with lint, tests, and production build. Each package update is an individual commit.
+
 ## Setup
 
 Add your Gleap API key to your project's `.env` file:

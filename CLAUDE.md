@@ -14,6 +14,7 @@ Each skill lives in its own directory with a `SKILL.md` (name, trigger descripti
 |-------|---------|--------|
 | `gleap-analyzer` | Fetches a Gleap card and produces a structured N3 analysis in pt-BR | `gleap-analyzer/scripts/fetch-gleap-card.js` |
 | `gleap-responder` | Posts an investigation report as an internal note on a Gleap card | `gleap-responder/scripts/post-gleap-note.js` |
+| `angular-upgrade` | Upgrades an Angular project by one major version using `ng update` | — |
 
 ## Adding a New Skill
 
