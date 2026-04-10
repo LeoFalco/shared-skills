@@ -1,11 +1,20 @@
-import { readFile, writeFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { writeFile } from 'node:fs/promises'
 
 const TICKET_ID = process.argv[2]
-const PROJECT_ID = process.argv[3] || '695d175e48ac2b20b647cbfe'
+const PROJECT_ID = process.argv[3]
 
-if (!TICKET_ID) {
-  console.error('Usage: node fetch-gleap-card.js <ticket-id> [project-id]')
+if (!TICKET_ID || !PROJECT_ID) {
+  console.error('Usage: node fetch-gleap-card.js <ticket-id> <project-id>')
+  process.exit(1)
+}
+
+const HEX_24 = /^[0-9a-f]{24}$/i
+if (!HEX_24.test(TICKET_ID)) {
+  console.error(`Error: Invalid ticket ID "${TICKET_ID}". Must be a 24-character hex string.`)
+  process.exit(1)
+}
+if (!HEX_24.test(PROJECT_ID)) {
+  console.error(`Error: Invalid project ID "${PROJECT_ID}". Must be a 24-character hex string.`)
   process.exit(1)
 }
 

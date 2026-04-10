@@ -44,13 +44,13 @@ Each skill lives in its own directory with a `SKILL.md` (name, trigger descripti
 
 - Messages and activities are fetched with pagination (50 per page)
 - Rich text (`doc` type content) is converted to plain text via `docToPlainText()`
-- Default project ID fallback: `695d175e48ac2b20b647cbfe`
+- Both `ticketId` and `projectId` are required (no defaults)
 
 ## Testing Scripts Locally
 
 ```bash
 # fetch-gleap-card.js
-GLEAP_API_KEY=<key> node gleap-analyzer/scripts/fetch-gleap-card.js <ticketId> [projectId]
+GLEAP_API_KEY=<key> node gleap-analyzer/scripts/fetch-gleap-card.js <ticketId> <projectId>
 
 # post-gleap-note.js
 GLEAP_API_KEY=<key> node gleap-responder/scripts/post-gleap-note.js <ticketId> <projectId> <content-file.md>
