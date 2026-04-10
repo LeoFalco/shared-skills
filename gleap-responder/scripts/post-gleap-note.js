@@ -1,5 +1,4 @@
 import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
 
 const TICKET_ID = process.argv[2]
 const PROJECT_ID = process.argv[3]
@@ -7,6 +6,16 @@ const CONTENT_FILE = process.argv[4]
 
 if (!TICKET_ID || !PROJECT_ID || !CONTENT_FILE) {
   console.error('Usage: node post-gleap-note.js <ticket-id> <project-id> <content-file>')
+  process.exit(1)
+}
+
+const HEX_24 = /^[0-9a-f]{24}$/i
+if (!HEX_24.test(TICKET_ID)) {
+  console.error(`Error: Invalid ticket ID "${TICKET_ID}". Must be a 24-character hex string.`)
+  process.exit(1)
+}
+if (!HEX_24.test(PROJECT_ID)) {
+  console.error(`Error: Invalid project ID "${PROJECT_ID}". Must be a 24-character hex string.`)
   process.exit(1)
 }
 
