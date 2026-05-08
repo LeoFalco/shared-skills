@@ -10,8 +10,16 @@ npx skills add LeoFalco/shared-skills -g -y
 
 ## Updating
 
+Update by skill name (the `skills` CLI does not resolve repo slugs in `update`):
+
 ```bash
-npx skills update LeoFalco/shared-skills -g -y
+npx skills update gleap-analyzer gleap-responder angular-upgrade -g -y
+```
+
+To check what's installed:
+
+```bash
+npx skills list -g
 ```
 
 ## Skills
