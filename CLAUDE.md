@@ -6,24 +6,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a **shared Claude Code skills** repository — a collection of reusable skills installed into other projects via `npx skills add LeoFalco/shared-skills -g -y` and used within Claude Code sessions.
 
-Each skill lives in its own directory with a `SKILL.md` (name, trigger description, runtime workflow) and a `scripts/` folder for any supporting scripts.
+Each skill lives in its own directory with a `SKILL.md` (name, trigger description, runtime workflow) and optional supporting scripts under `scripts/`.
 
 ### Skills
 
-| Skill | Purpose | Script |
-|-------|---------|--------|
-| `gleap-analyzer` | Fetches a Gleap card and produces a structured N3 analysis in pt-BR | `gleap-analyzer/scripts/fetch-gleap-card.js` |
-| `gleap-responder` | Posts an investigation report as an internal note on a Gleap card | `gleap-responder/scripts/post-gleap-note.js` |
+| Skill | Purpose | Implementation |
+|-------|---------|----------------|
+| `gleap-analyzer` | Fetches a Gleap card and produces a structured N3 analysis in pt-BR | Gleap MCP (`mcp__gleap__get_ticket`, `get_ticket_messages`, `get_ticket_activity_log`) |
+| `gleap-responder` | Posts an investigation report as an internal note on a Gleap card | Gleap MCP (`mcp__gleap__send_message` with `isNote: true`) |
 | `angular-upgrade` | Upgrades an Angular project by one major version using `ng update` | — |
 
 ## Adding a New Skill
 
 1. Create a directory with the skill name
 2. Add a `SKILL.md` defining name, trigger description, and workflow
-3. Add supporting scripts under `scripts/` if needed
+3. Add supporting scripts under `scripts/` only if MCPs / built-in tools are not enough
 4. Update the skills table above
 
-## Script Conventions
+## Script Conventions (when scripts are needed)
 
 - Zero external dependencies — Node.js built-ins only (`fetch`, `fs`, `path`)
 - ESM imports with top-level `await` (requires Node 18+)
@@ -32,26 +32,9 @@ Each skill lives in its own directory with a `SKILL.md` (name, trigger descripti
 
 ## Gleap Skills — Architecture
 
-### Data Flow
+Both Gleap skills delegate to the **Gleap MCP server**. The MCP handles authentication and project scoping, so the consumer project does not need a `GLEAP_API_KEY` or to know the `projectId` from the URL.
 
-1. User provides a Gleap URL → skill extracts `ticketId` and `projectId` (24-char hex each)
-2. `fetch-gleap-card.js` calls Gleap API v3 (`https://api.gleap.io/v3`) for ticket, messages, and activities in parallel
-3. Output is written to `gleap-card-<ticketId>.json` (heavily sanitized — many ticket/message fields are stripped)
-4. Claude reads the JSON and produces analysis
-5. Optionally, `post-gleap-note.js` posts a markdown report back as an internal note via `POST /v3/messages`
+- `gleap-analyzer` parses the URL only to extract the `ticketId` (24-char hex), then calls `mcp__gleap__get_ticket`, `mcp__gleap__get_ticket_messages` (paginated, `limit: 200`), and `mcp__gleap__get_ticket_activity_log` in parallel.
+- `gleap-responder` posts the report via `mcp__gleap__send_message` with `isNote: true`. The MCP accepts plain text/markdown — no TipTap conversion needed.
 
-### Gleap-Specific Details
-
-- Messages and activities are fetched with pagination (50 per page)
-- Rich text (`doc` type content) is converted to plain text via `docToPlainText()`
-- Both `ticketId` and `projectId` are required (no defaults)
-
-## Testing Scripts Locally
-
-```bash
-# fetch-gleap-card.js
-GLEAP_API_KEY=<key> node gleap-analyzer/scripts/fetch-gleap-card.js <ticketId> <projectId>
-
-# post-gleap-note.js
-GLEAP_API_KEY=<key> node gleap-responder/scripts/post-gleap-note.js <ticketId> <projectId> <content-file.md>
-```
+If the MCP is not authenticated, the skills instruct the user to authenticate the Gleap MCP server in Claude Code.

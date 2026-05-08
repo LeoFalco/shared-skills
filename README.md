@@ -30,7 +30,7 @@ Posts an investigation report as an internal note on a Gleap card.
 
 **Triggers:** "respond to the gleap card", "post a note", "send the relatório".
 
-**Flow:** Gathers findings from the conversation, generates a structured report, shows it for approval, and posts it via the Gleap API.
+**Flow:** Gathers findings from the conversation, generates a structured report, shows it for approval, and posts it as an internal note.
 
 ### angular-upgrade
 
@@ -42,13 +42,9 @@ Upgrades an Angular project by exactly one major version using the Angular CLI.
 
 ## Setup
 
-Add your Gleap API key to your project's `.env` file:
+The Gleap skills (`gleap-analyzer` and `gleap-responder`) use the **Gleap MCP server** for all API access. Make sure the Gleap MCP is connected and authenticated in Claude Code — no `GLEAP_API_KEY` or other env vars are required in the consumer project.
 
-```
-GLEAP_API_KEY=your_api_key_here
-```
-
-No additional dependencies required — scripts use only Node.js built-ins (requires Node 18+).
+The `angular-upgrade` skill uses only the Angular CLI and standard Node.js (18+) tooling.
 
 ## License
 
