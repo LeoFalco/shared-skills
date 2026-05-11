@@ -13,7 +13,7 @@ npx skills add LeoFalco/shared-skills -g -y
 Update by skill name (the `skills` CLI does not resolve repo slugs in `update`):
 
 ```bash
-npx skills update gleap-analyzer gleap-responder angular-upgrade -g -y
+npx skills update gleap-analyzer gleap-responder angular-upgrade flux-publish -g -y
 ```
 
 To check what's installed:
@@ -48,11 +48,21 @@ Upgrades an Angular project by exactly one major version using the Angular CLI.
 
 **Flow:** Detects the current Angular version, checks the official update guide, runs `ng update` for core packages and ecosystem dependencies (Material, CDK, ESLint, TypeScript, etc.), then validates with lint, tests, and production build. Each package update is an individual commit.
 
+### flux-publish
+
+Creates a publication card on the Flux board "Produto FSM - Publicações" from the PR open in the current branch.
+
+**Triggers:** "manda esse PR pro flux", "abre card de publicação", "fluxa esse PR", "cria publicação no flux", "vira esse PR em card no Flux", or variants — including right after merging a PR.
+
+**Flow:** Reads the current PR with `gh pr view`, fetches the form options via the Flux GraphQL API (operation `Form`), infers Projeto/Área from repo name and PR title prefix, asks the user for ambiguous fields (Equipe Responsável, Rollback when relevant), confirms, then creates the card via `CreateCard` mutation. Includes a `--dry-run` mode that reads from a local fixture and prints the payload without calling the API.
+
 ## Setup
 
 The Gleap skills (`gleap-analyzer` and `gleap-responder`) use the **Gleap MCP server** for all API access. Make sure the Gleap MCP is connected and authenticated in Claude Code — no `GLEAP_API_KEY` or other env vars are required in the consumer project.
 
 The `angular-upgrade` skill uses only the Angular CLI and standard Node.js (18+) tooling.
+
+The `flux-publish` skill needs `FLUX_JWT` exported (token from the Flux web app DevTools — expires in ~3 days) and `gh` CLI authenticated. The Flux MCP doesn't expose the form options or the `CreateCard` mutation today (see [FieldControl/isengard#2591](https://github.com/FieldControl/isengard/issues/2591)), so the skill uses GraphQL directly.
 
 ## License
 
