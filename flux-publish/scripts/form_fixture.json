@@ -1,0 +1,257 @@
+{
+  "id": "c0a35ca9-aa15-49c5-a8c6-9b678e30003c",
+  "name": "Produto FSM - Publicações",
+  "questions": [
+    {
+      "id": "132a3167-d354-4085-a8f6-bb2adbe79114",
+      "title": "Título",
+      "type": "shortAnswer",
+      "required": false,
+      "position": 0,
+      "options": []
+    },
+    {
+      "id": "bd561eeb-a8d7-4a0a-b7d2-74e88ee242c2",
+      "title": "Link do(s) PR(s)",
+      "type": "paragraph",
+      "required": false,
+      "position": 1,
+      "options": []
+    },
+    {
+      "id": "f34a1126-3c19-43fc-ac50-b4a8051a9273",
+      "title": "Link Movidesk",
+      "type": "url",
+      "required": false,
+      "position": 2,
+      "options": []
+    },
+    {
+      "id": "28c0b446-ebf3-421d-9f87-acf35bf94499",
+      "title": "Link Documentação",
+      "type": "url",
+      "required": false,
+      "position": 3,
+      "options": []
+    },
+    {
+      "id": "dc16125d-b1e3-4964-9fd6-dfb3243e4d7c",
+      "title": "Projeto",
+      "type": "checkboxes",
+      "required": false,
+      "position": 4,
+      "options": [
+        {
+          "id": "0f4beefc-4602-4d1a-a6e4-03906565f1ac",
+          "value": "Mordor",
+          "position": 1
+        },
+        {
+          "id": "7527d48d-b586-4991-bb8e-c93071a69921",
+          "value": "Mordor-2",
+          "position": 2
+        },
+        {
+          "id": "0d86bfde-ac40-4938-afc9-40f50f8dc09b",
+          "value": "Crebain",
+          "position": 2
+        },
+        {
+          "id": "6cff7325-ac06-4fc4-9909-ada0c00cfb67",
+          "value": "Orc-3",
+          "position": 4
+        },
+        {
+          "id": "9f5aa4f8-67bb-460f-b534-fb29442a55c9",
+          "value": "Eyeofsauron",
+          "position": 4
+        },
+        {
+          "id": "6b88b7e0-5ffa-49da-8b1a-e5a9ac7ae676",
+          "value": "Eyeofsauron-2",
+          "position": 4
+        },
+        {
+          "id": "355bfd94-6f44-40c1-a46b-78f95e42c2f6",
+          "value": "Gothmog-2",
+          "position": 6
+        },
+        {
+          "id": "5a3e5bc4-6882-4d69-ab28-152c74f86c20",
+          "value": "Nazgul-2",
+          "position": 7
+        },
+        {
+          "id": "e70906ae-b36e-46f7-8af5-fbf65e9d66ae",
+          "value": "Nazgul",
+          "position": 7
+        },
+        {
+          "id": "02ab1582-3ae5-44db-a3e5-4d5b60a8847a",
+          "value": "Morgulblade",
+          "position": 8
+        },
+        {
+          "id": "96f175a7-f11d-4745-981d-bc94f990185d",
+          "value": "Warg",
+          "position": 9
+        },
+        {
+          "id": "ac35fe10-b858-4f71-b0d6-2a84e8098069",
+          "value": "Narchost",
+          "position": 10
+        },
+        {
+          "id": "c5e3c8ec-a2f7-4c76-937f-e4940974a380",
+          "value": "Warg-2",
+          "position": 10
+        },
+        {
+          "id": "3e6155a6-4ff0-4750-adaf-d7233014e5a4",
+          "value": "Carchost",
+          "position": 11
+        },
+        {
+          "id": "86213c51-a604-42a2-93f0-3b261fdd1623",
+          "value": "Grond-2",
+          "position": 12
+        },
+        {
+          "id": "b4bf8c09-71b5-4b9d-b567-b6a87ab684f1",
+          "value": "Baraddur",
+          "position": 13
+        },
+        {
+          "id": "317ba04d-0ef9-458a-8da8-afbd8fa868df",
+          "value": "Blackgate",
+          "position": 14
+        },
+        {
+          "id": "e23ca9e2-c062-44dd-bdff-4cd3450d52dd",
+          "value": "Mouthofsauron",
+          "position": 15
+        },
+        {
+          "id": "cec92409-8280-47b9-864c-0a74f109116e",
+          "value": "Baraddur-3",
+          "position": 16
+        },
+        {
+          "id": "03c1c3ca-4fb2-4e65-a138-a52e40cedea3",
+          "value": "Mumakil",
+          "position": 16
+        },
+        {
+          "id": "0b483aea-5046-4c33-9bdc-23f3220b925d",
+          "value": "Shagrat-2",
+          "position": 18
+        },
+        {
+          "id": "ed97e796-8b64-4ad9-9a4a-ddf5bfc55c9c",
+          "value": "Gandalf",
+          "position": 19
+        },
+        {
+          "id": "fbd6d51a-271b-48b1-be5f-e463b0e91c64",
+          "value": "Saruman-2",
+          "position": 21
+        },
+        {
+          "id": "7f452e4f-55f8-4543-9e7f-ee82ea6b71f0",
+          "value": "Mouthofsauron-3",
+          "position": 22
+        },
+        {
+          "id": "10f7d0b0-4487-4a5f-9fe6-95aaae7aede7",
+          "value": "Cirith-ungol",
+          "position": 23
+        },
+        {
+          "id": "11b580e3-9ec8-4954-a8c3-83ba0b778ce5",
+          "value": "Palantir",
+          "position": 24
+        },
+        {
+          "id": "b8b3a25a-0295-470a-8c80-d2751487605a",
+          "value": "Lorgan",
+          "position": 26
+        },
+        {
+          "id": "d706cfdb-730b-481c-91ff-7f073a40cfa2",
+          "value": "Sammathnaur",
+          "position": 28
+        }
+      ]
+    },
+    {
+      "id": "c94fa92c-6360-4698-bd99-81cead4c7c83",
+      "title": "Área",
+      "type": "multipleChoice",
+      "required": false,
+      "position": 5,
+      "options": [
+        {
+          "id": "dce7a6c0-366c-4edd-b4f7-c19f9f37f1e3",
+          "value": "Correção",
+          "position": 1
+        },
+        {
+          "id": "ce0e896e-1375-4664-bf8b-d95d0ba4d63a",
+          "value": "Implementação",
+          "position": 2
+        },
+        {
+          "id": "3be7b94c-26d9-461b-a84d-7e1d743c9fa5",
+          "value": "Melhoria",
+          "position": 3
+        }
+      ]
+    },
+    {
+      "id": "86f9cc9a-b1ce-48f0-bdcb-f7bec64a4b11",
+      "title": "Rollback",
+      "type": "checkboxes",
+      "required": false,
+      "position": 6,
+      "options": [
+        {
+          "id": "4dd3ea24-4194-4260-aa0e-c8e3013e78c0",
+          "value": "Sim",
+          "position": 1
+        },
+        {
+          "id": "aebf6499-f0af-44d0-a8be-aebd534f69a4",
+          "value": "Incidente",
+          "position": 2
+        }
+      ]
+    },
+    {
+      "id": "3b7b1d2f-1b03-4f38-8c2a-19fa6b359d8c",
+      "title": "Equipe Responsável",
+      "type": "checkboxes",
+      "required": false,
+      "position": 7,
+      "options": [
+        {
+          "id": "41b65420-baea-4687-993b-e492e39d0b78",
+          "value": "Projetos",
+          "position": 1
+        },
+        {
+          "id": "e6932f3a-4441-4443-b71a-6142ca13116f",
+          "value": "Sustentação",
+          "position": 2
+        }
+      ]
+    },
+    {
+      "id": "54adb187-4861-428c-a1dd-0f1baa118446",
+      "title": "Quantidade de problemas encontrados",
+      "type": "numeric",
+      "required": false,
+      "position": 9,
+      "options": []
+    }
+  ]
+}
