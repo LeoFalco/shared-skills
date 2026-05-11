@@ -23,13 +23,17 @@ Cria um card no board **Produto FSM - Publicações** (Flux/Isengard) a partir d
 
 ## Resolução do caminho do script
 
-A skill pode estar instalada em `$HOME/.claude/skills/flux-publish` (global) ou `.claude/skills/flux-publish` (project-local). Antes do primeiro uso na conversa, descubra o caminho real do `flux_api.py`:
+A skill pode estar instalada em vários lugares dependendo do harness (`$HOME/.claude/skills/flux-publish`, `$HOME/.agents/skills/flux-publish`, `$HOME/.cursor/skills/flux-publish`, ou em `.claude/skills/flux-publish` / `.agents/skills/flux-publish` dentro do projeto). Antes do primeiro uso na conversa, descubra o caminho real do `flux_api.py` filtrando apenas os diretórios que existem (senão o `find` aborta com exit≠0 e zera a variável):
 
 ```bash
-SCRIPT="$(find "$HOME/.claude/skills" .claude/skills -name flux_api.py -path '*/flux-publish/*' 2>/dev/null | head -1)"
+SEARCH=""
+for d in "$HOME/.claude/skills" "$HOME/.agents/skills" "$HOME/.cursor/skills" ".claude/skills" ".agents/skills"; do
+  [ -d "$d" ] && SEARCH="$SEARCH $d"
+done
+SCRIPT="$(find $SEARCH -name flux_api.py -path '*/flux-publish/*' 2>/dev/null | head -1)"
 ```
 
-Use `"$SCRIPT"` nos comandos abaixo. Se não encontrar nada, a skill não está instalada — diga ao usuário pra rodar `npx skills add LeoFalco/shared-skills -g -y`.
+Use `"$SCRIPT"` nos comandos abaixo. Se `$SCRIPT` ficar vazio, a skill não está instalada nesse harness — diga ao usuário pra rodar `npx skills add LeoFalco/shared-skills -g -y` (ou `npx skills update flux-publish -g -y` se já tiver outras skills do repo) e pare.
 
 ## Fluxo
 
