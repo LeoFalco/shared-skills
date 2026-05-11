@@ -58,7 +58,18 @@ A saída é o form com `questions[].options[]` resolvido. Os campos relevantes:
 
 **Importante:** os IDs de opção podem mudar — sempre resolva via o script `options`, nunca hardcode UUIDs no payload. A skill já sabe os `questionId`s de cada campo (eles são estáveis no board, ver tabela abaixo), mas os `optionId`s vêm da chamada acima.
 
-### 3. Confirmação antes de criar
+### 3. Escolha de etiquetas
+
+Antes da confirmação, liste as etiquetas disponíveis no board via MCP:
+
+```
+mcp__claude_ai_FluxControl_Custom_Production__list_labels
+  pipeId: ac4db338-c7eb-452e-b75a-978abe03c8b6
+```
+
+Mostre as etiquetas pro usuário (nome + cor) e pergunte quais aplicar — pode ser nenhuma, uma ou várias. Guarde os `id`s das escolhidas pra usar no passo 6.
+
+### 4. Confirmação antes de criar
 
 Antes de criar o card, mostre ao usuário uma tabela resumo dos campos que vão ser preenchidos e peça confirmação. Algo curto, tipo:
 
@@ -69,12 +80,13 @@ Vou criar:
   Projeto: <opção>
   Área: <opção>
   Equipe: <opção>
+  Etiquetas: <nomes escolhidos, ou "nenhuma">
 Confirma?
 ```
 
 Em modo `--dry-run` (ver "Testes" abaixo), pule a confirmação e siga direto pro próximo passo.
 
-### 4. Criação do card
+### 5. Criação do card
 
 Monte o payload no formato:
 
@@ -108,7 +120,33 @@ https://app.fluxcontrol.com.br/#/fluxo/ac4db338-...?view_mode=board&panel=card-d
 
 Esse é o formato correto — **não** use `https://app.fluxcontrol.com.br/cards/<id>`, que não funciona.
 
-### 5. Comentário no PR com o link do card
+### 6. Atribuir o Leo como responsável e aplicar etiquetas
+
+O Leo sempre quer ser responsável pelos cards de publicação que cria. O `userId` está no payload do próprio `$FLUX_JWT` — não precisa chamar `get_me`.
+
+1. Extrai o `id` do payload do JWT (segundo segmento, base64url):
+   ```bash
+   USER_ID="$(printf '%s' "$FLUX_JWT" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
+   ```
+2. Adiciona como assignee no card recém-criado via MCP:
+   ```
+   mcp__claude_ai_FluxControl_Custom_Production__add_card_assignee
+     cardId: <id do card criado no passo 5>
+     assigneeId: <USER_ID extraído acima>
+   ```
+3. Para cada etiqueta escolhida no passo 3, aplica via MCP:
+   ```
+   mcp__claude_ai_FluxControl_Custom_Production__add_card_label
+     input:
+       cardId: <id do card criado no passo 5>
+       labelId: <id da etiqueta>
+   ```
+
+Em modo `--dry-run`, pule esses passos e diga ao usuário que o Leo seria atribuído como responsável e quais etiquetas seriam aplicadas.
+
+Se algum desses passos falhar (MCP não autenticado, etc), mostre o erro mas não falhe a skill — o card já foi criado, atribuição e etiquetas são só conveniência.
+
+### 7. Comentário no PR com o link do card
 
 Após criar o card com sucesso, **verifique se o PR já tem um comentário com link do Flux** — se não tiver, adicione um. Isso evita comentários duplicados quando a skill rodar mais de uma vez no mesmo PR (ex: usuário criou um card de teste antes).
 
