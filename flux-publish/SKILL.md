@@ -122,17 +122,17 @@ Esse é o formato correto — **não** use `https://app.fluxcontrol.com.br/cards
 
 ### 6. Atribuir o Leo como responsável e aplicar etiquetas
 
-O Leo sempre quer ser responsável pelos cards de publicação que cria. O `userId` está no payload do próprio `$FLUX_JWT` — não precisa chamar `get_me`.
+O Leo sempre quer ser responsável pelos cards de publicação que cria.
 
-1. Extrai o `id` do payload do JWT (segundo segmento, base64url):
-   ```bash
-   USER_ID="$(printf '%s' "$FLUX_JWT" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
+1. Pega o `id` do usuário autenticado via MCP:
+   ```
+   mcp__claude_ai_FluxControl_Custom_Production__get_me
    ```
 2. Adiciona como assignee no card recém-criado via MCP:
    ```
    mcp__claude_ai_FluxControl_Custom_Production__add_card_assignee
      cardId: <id do card criado no passo 5>
-     assigneeId: <USER_ID extraído acima>
+     assigneeId: <id retornado pelo get_me>
    ```
 3. Para cada etiqueta escolhida no passo 3, aplica via MCP:
    ```
@@ -194,4 +194,13 @@ FLUX_JWT='<token>' python3 "$SCRIPT" options > "$(dirname "$SCRIPT")/form_fixtur
 
 ## Por que essa skill existe
 
-O MCP do Flux não expõe nem as opções dos campos do formulário inicial, nem uma mutation `CreateCard`. A skill resolve isso usando GraphQL direto. Quando o MCP for atualizado (ver issue [FieldControl/isengard#2591](https://github.com/FieldControl/isengard/issues/2591)), a skill pode migrar para usar `mcp__claude_ai_FluxControl_Custom_Production__*` e remover o curl direto — mas isso ainda exige a mutation `CreateCard` no MCP, que hoje não existe.
+O MCP do Flux não expõe nem as opções dos campos do formulário inicial, nem uma mutation `CreateCard`. A skill resolve isso usando GraphQL direto.
+
+Estado atual do MCP (verificado em 2026-05-11):
+
+- `get_form(id, includeQuestions: true)` retorna apenas `id, title, type, required, position, helpText` por questão — **sem `options[]`**, mesmo nos campos de escolha (`checkboxes`, `multipleChoice`, `dropdown`). Por isso o passo 2 ainda depende do `flux_api.py options`.
+- `get_field(id, includeOptions: true)` ainda retorna `FORBIDDEN` para usuários sem `pipes:forms:update`, apesar do tool descriptor já listar a permissão de leitura.
+- `get_pipe_context(includeStartForm: true)` retorna `startForm` só com metadados (`id, name, type, questionsCount`) — também não ajuda.
+- Não existe mutation `CreateCard` no MCP — esse é o bloqueio principal, mesmo que `get_form` fosse corrigido.
+
+Tracking: [FieldControl/isengard#2591](https://github.com/FieldControl/isengard/issues/2591) foi marcado como `CLOSED/COMPLETED` em 2026-05-11, mas testes reais nessa mesma data mostram que o comportamento ainda não bate com o critério de aceite (provavelmente schema atualizado, resolver ainda não). Quando `get_form` passar a retornar `options[]` de fato **e** a mutation `CreateCard` for exposta, o script pode ser removido inteiro.
