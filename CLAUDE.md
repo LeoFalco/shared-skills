@@ -16,6 +16,12 @@ Each skill lives in its own directory with a `SKILL.md` (name, trigger descripti
 | `gleap-responder` | Posts an investigation report as an internal note on a Gleap card | Gleap MCP (`mcp__gleap__send_message` with `isNote: true`) |
 | `angular-upgrade` | Upgrades an Angular project by one major version using `ng update` | — |
 | `flux-publish` | Creates a publication card on Flux "Produto FSM - Publicações" board from the current PR | Python `scripts/flux_api.py` (GraphQL direto; `$FLUX_JWT` no env) |
+| `flux-attach` | Uploads files (APK, AAB, images, PDFs) and links them as attachments to an existing Flux card | Python `scripts/flux_attach.py` (GraphQL direto; `$FLUX_JWT` no env) |
+| `flux-my-cards` | Lists the user's cards across all Flux boards, grouped by board and stage | Flux MCP (`mcp__claude_ai_FluxControl_Custom_Production__*`) |
+| `merge` | Automates the full PR merge workflow for the current branch (waits CI, approves, merges) | `gh` CLI + git |
+| `cleanup-branches` | Cleans up local/remote stale branches and merged/closed PR branches | `gh` CLI + git |
+| `node-upgrade` | Upgrades Node.js to the next LTS across the whole project (.nvmrc, Dockerfiles, serverless.yml, CI) | git + project tooling (lint/test) |
+| `pin-dependencies` | Pins npm deps by removing `^`/`~` prefixes across all package.json (monorepo-aware) | Node `scripts/pin-dependencies.js` |
 
 ## Adding a New Skill
 
@@ -48,6 +54,6 @@ The Flux MCP doesn't expose the form options (only titles) or a `CreateCard` mut
 - `options`: runs the `Form` query inline (not persisted-query) to get `questions[].options[] { id, value }` for the dynamic fields (Projeto, Área, Rollback, Equipe Responsável). In `FLUX_PUBLISH_DRY_RUN=1` mode, reads from `scripts/form_fixture.json` instead.
 - `create`: runs the `CreateCard` persisted-query mutation. In dry-run, prints the payload without calling the API.
 
-Auth is a JWT in `$FLUX_JWT` (token from the Flux web app DevTools, ~3-day TTL). The skill instructs the user to refresh when expired.
+Auth is a JWT in `$FLUX_JWT` (token from the Flux web app DevTools). The skill instructs the user to refresh it if a request fails with an auth error.
 
 Tracking the MCP-side fix: [FieldControl/isengard#2591](https://github.com/FieldControl/isengard/issues/2591). Once `get_form` returns `options` and `CreateCard` is exposed in the MCP, the script can be replaced by MCP tool calls.

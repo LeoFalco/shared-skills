@@ -1,0 +1,23 @@
+{
+  "skill_name": "node-upgrade",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "update node in this project to the next lts",
+      "expected_output": "Updates .nvmrc files, Dockerfile, serverless.yml runtime, reinstalls deps, runs lint and tests in each package",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "dependabot opened a PR bumping the docker base image from node:24-alpine to node:26-alpine, can you align the rest of the project?",
+      "expected_output": "Detects version mismatch between Dockerfile (26) and .nvmrc (24), updates .nvmrc, serverless.yml, reinstalls, validates with lint/tests",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "atualizar node pra próxima versão LTS e verificar se tudo continua funcionando",
+      "expected_output": "Same as eval 1 but triggered in Portuguese — determines next LTS, updates all configs, validates with lint and tests",
+      "files": []
+    }
+  ]
+}

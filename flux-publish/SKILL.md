@@ -1,6 +1,6 @@
 ---
 name: flux-publish
-description: Cria um card no board "Produto FSM - Publicações" no Flux a partir do PR da branch atual. Use sempre que o usuário pedir "cria card de publicação", "vira esse PR em card no Flux", "manda esse PR pro flux", "abre publicação", "fluxa esse PR", ou variações — incluindo logo depois de mergear um PR, quando faz sentido publicar.
+description: Cria um card no board "Produto FSM - Publicações" no Flux a partir do PR da branch atual. Use sempre que o usuário pedir "cria card de publicação", "vira esse PR em card no Flux", "manda esse PR pro flux", "abre publicação", "fluxa esse PR", ou variações — incluindo logo depois de abrir um PR, quando faz sentido publicar.
 ---
 
 # flux-publish
@@ -10,7 +10,7 @@ Cria um card no board **Produto FSM - Publicações** (Flux/Isengard) a partir d
 ## Quando usar
 
 - O usuário pede explicitamente para abrir card de publicação no Flux para um PR.
-- Logo depois de mergear um PR, se o usuário sinalizar que quer publicar.
+- Logo depois de abrir um PR, se o usuário sinalizar que quer publicar.
 
 ## Pré-requisitos
 
@@ -19,7 +19,6 @@ Cria um card no board **Produto FSM - Publicações** (Flux/Isengard) a partir d
   ```bash
   export FLUX_JWT='eyJhbGciOiJI...'
   ```
-  O token expira em ~3 dias.
 
 ## Resolução do caminho do script
 
