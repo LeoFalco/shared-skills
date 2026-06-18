@@ -11,7 +11,7 @@ do Flux usa — pega ele no DevTools (Network → qualquer request → header
 
     export FLUX_JWT='eyJhbGciOiJI...'
 
-O token expira em ~3 dias; quando expirar, refresh manual.
+Se algum request falhar com erro de autenticação, exporte um token novo.
 """
 
 from __future__ import annotations
